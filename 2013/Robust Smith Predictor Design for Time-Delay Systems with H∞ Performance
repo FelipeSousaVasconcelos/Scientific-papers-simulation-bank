@@ -1,0 +1,19 @@
+clear all
+close all
+clc
+
+%
+
+s=tf('s');
+
+%% Example 1
+
+G=1/((5*s+1)*(10*s+1));
+Ld=0.1/s;
+W{1}=2/(30*s+1)^2;
+W{2}=(-s^2-2*s)/(s^2+2*s+1);
+phi=conphi('PID',0.01);
+hinfper=conper('Hinf',W,Ld);
+w=logspace(-3,3,100);
+opt=condesopt('gamma',[0.01 2 0.001],'lambda',[1 1 0 0],'w',w);
+K=condes(G,phi,hinfper,opt)
