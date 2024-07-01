@@ -26,7 +26,7 @@ set(groot,'defaultTextInterpreter','latex');
 rng('default');
 
 %% simulation paramters
-Tsim = 100;
+Tsim = 30;
 Tref = 0;
 ref = 1;
 
@@ -41,9 +41,13 @@ h = 2;
 
 %% f
 % lamda = a+f*exp(-a*h)
-faux = 1.1; % must be faux>1 to lambda be negative
-f = -faux*(a/exp(-a*h));
- 
+p = -1;
+ba = b0 + expm(-a*h)*b1;
+f = (p-a)/ba;
+
+%% Closed loop system
+CL = tf(b1,[1 -(a+ba*f)]);
+
 %% Simulation
 w = f*(exp(-a*h)-exp(-h*s))/(s-a);
 
@@ -53,11 +57,11 @@ S1 = exp(-a*h)/(s-a);
 % Model SS S1
 dssP1 = ss(S1, 'min');
 A1z = dssP1.A; %Aj=T^-1*A*T
-B1z = dssP1.B;   %Bj=T^-1*B;
-C1z = dssP1.C;   %Cj=C*T;
+B1z = dssP1.B; %Bj=T^-1*B;
+C1z = dssP1.C; %Cj=C*T;
 
 % Compute the integral 
-N=500;
+N=2000;
 [tal1,Q1,KSoma1,Ad1,Bd1,Cd1,Dd1] = paramW(N,h,A1z,B1z);
 
 sim('manitius_ex2_simu.slx');
@@ -72,8 +76,12 @@ ylabel('Output','interpreter','Latex');
 title('Open loop response','interpreter','Latex');
 grid
 subplot(2,1,2)
-plot(t,y_closed_loop, 'k', 'LineWidth', 2);
+plot(t,y_closed_loop, 'k', 'LineWidth', 2); 
+hold on
+plot(t,y_closed_loop_tf, '--r', 'LineWidth', 2);
 xlabel('Time (s)','interpreter','Latex');
 ylabel('Output','interpreter','Latex');
-title('Closed loop response','interpreter','Latex');
+leg1 = legend({'Closed loop response','Closed loop response tf'},'FontName','Times New Roman','FontSize',12,'location','southeast');
+set(leg1(1),'Interpreter','latex');
+legend boxoff
 grid
