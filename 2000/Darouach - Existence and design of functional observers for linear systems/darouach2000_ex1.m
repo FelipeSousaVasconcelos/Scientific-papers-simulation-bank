@@ -1,7 +1,31 @@
+% @article{darouach2000existence,
+%   title={Existence and design of functional observers for linear systems},
+%   author={Darouach, Mohamed},
+%   journal={IEEE Transactions on Automatic Control},
+%   volume={45},
+%   number={5},
+%   pages={940--943},
+%   year={2000},
+%   publisher={IEEE}
+% }
+
+% Felipe José de Sousa Vasconcelos
+% First modification: 05/07/2024
+% Last modification: 05/07/2024
+
+%% Initialization
 clear all
 close all
 clc
 
+warning off
+
+set(groot, 'defaultAxesTickLabelInterpreter','latex');
+set(groot, 'defaultLegendInterpreter','latex');
+set(groot,'defaultTextInterpreter','latex');
+rng('default');
+
+%% System
 A = [-2 1 0; 1 -3 1; 0 0 -1];
 C = [1 0 0; 0 1 0];
 L = [1 1 0];
