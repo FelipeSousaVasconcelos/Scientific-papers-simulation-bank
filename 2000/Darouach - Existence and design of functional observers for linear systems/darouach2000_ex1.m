@@ -75,7 +75,6 @@ end
 F = L*A*pinv(L) - L*Abar*pinv(Sig)*[C*A; C]*pinv(L)
 G = ( eye(4) - Sig*pinv(Sig)) * [C*A; C] *pinv(L)
 p = -3;
-Z = (F-p)*pinv(G);
 
 Z4 = (F - p) / G(4);
 
