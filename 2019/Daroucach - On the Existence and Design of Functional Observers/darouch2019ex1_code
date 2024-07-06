@@ -1,0 +1,79 @@
+% @article{darouach2019existence,
+%   title={On the existence and design of functional observers},
+%   author={Darouach, Mohamed and Fernando, Tyrone},
+%   journal={IEEE Transactions on Automatic Control},
+%   volume={65},
+%   number={6},
+%   pages={2751--2759},
+%   year={2019},
+%   publisher={IEEE}
+% }
+
+% Felipe José de Sousa Vasconcelos
+% First modification: 04/07/2024
+% Last modification: 04/07/2024
+
+%% Initialization
+clear all
+close all
+clc
+
+warning off
+
+set(groot, 'defaultAxesTickLabelInterpreter','latex');
+set(groot, 'defaultLegendInterpreter','latex');
+set(groot,'defaultTextInterpreter','latex');
+rng('default');
+
+%% System
+A = [ 8 -3/2 -13/2 0 -1/2 7/2
+     -5   6     4  0   0   1 
+      7 -3/2 -9/2  0 -1/2 5/2 
+      5  -3    -4  3   0  -1
+      5  -2    -6  0   4   1
+      7 -3/2 -13/2 0 -1/2 9/2];
+B = [8 -3/2 -13/2 0 -1/2 7/2]';
+C = [ 0 2  1 1 0 -1
+     -1 1 -1 1 2  0
+     -1 3  0 2 2 -1];
+L = [4 -3 -2 -1 0 -2
+     2 -1  0 -1 0 -2
+     6 -4 -2 -2 0 -4];
+
+% Ensure the system is controllable
+controllable = rank(ctrb(A, B)) == size(A, 1);
+if ~controllable
+disp('The system is not controllable');
+end
+
+
+%% Computing A1, A2, A3, B1, B2, B3 in (44) and verifying that Theorem 3 is satisfied.
+
+Pi = [L; C*A; C];
+
+Theta = L*A;
+
+Piinv = pinv(Pi)
+
+A1 = Theta*Piinv*[eye(3); zeros(3); zeros(3)] 
+B1 = (eye(9) - Pi*Piinv)*[eye(3); zeros(3); zeros(3)] 
+A2 = Theta*Piinv*[zeros(3); eye(3); zeros(3)] 
+B2 = (eye(9) - Pi*Piinv)*[zeros(3); eye(3); zeros(3)] 
+A3 = Theta*Piinv*[zeros(3); zeros(3); eye(3)] 
+B3 = (eye(9) - Pi*Piinv)*[zeros(3); zeros(3); eye(3)] 
+
+% Check the rank condition for the observer design
+rank_condition = rank([L; C*A; C; L*A]) == rank([L; C*A; C]);
+if ~rank_condition
+disp('The rank condition is not satisfied');
+end
+
+%% Design the functional observer
+
+Z = place(A1',B1',[-1 -2 -3]).'
+
+N = A1-Z*B1
+E = A2-Z*B2
+K = A3-Z*B3
+J = K+N*E
+H = (L-E*C)*B
